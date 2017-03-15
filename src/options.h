@@ -26,6 +26,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef OPTIONS_H
 #define OPTIONS_H
 
+typedef struct
+{
+   int x, y, w, h;
+} rect;
+
 struct __scrotoptions
 {
    int debug_level;
@@ -34,6 +39,7 @@ struct __scrotoptions
    int select;
    int focused;
    int window;
+   rect geometry;
    int quality;
    int alpha;
    int border;
@@ -49,6 +55,7 @@ struct __scrotoptions
 void init_parse_options(int argc, char **argv);
 char *name_thumbnail(char *name);
 void options_parse_thumbnail(char *optarg);
+void options_parse_geometry(char *optarg);
 extern scrotoptions opt;
 
 #endif

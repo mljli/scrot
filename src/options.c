@@ -46,7 +46,7 @@ init_parse_options(int argc, char **argv)
 static void
 scrot_parse_option_array(int argc, char **argv)
 {
-   static char stropts[] = "abcd:e:hmnqw:st:uv+:";
+   static char stropts[] = "abcd:e:hmnqw:g:st:uv+:";
    static struct option lopts[] = {
       /* actions */
       {"help", 0, 0, 'h'},                  /* okay */
@@ -62,6 +62,7 @@ scrot_parse_option_array(int argc, char **argv)
       {"multidisp", 0, 0, 'm'},
       /* toggles */
       {"window", 1, 0, 'w'},
+      {"geometry", 1, 0, 'g'},
       {"thumb", 1, 0, 't'},
       {"delay", 1, 0, 'd'},
       {"quality", 1, 0, 'q'},
@@ -114,6 +115,9 @@ scrot_parse_option_array(int argc, char **argv)
            break;
         case 'w':
            opt.window = strtol(optarg, NULL, 16);
+           break;
+        case 'g':
+           options_parse_geometry(optarg);
            break;
         case '+':
            opt.debug_level = atoi(optarg);
@@ -220,6 +224,29 @@ options_parse_thumbnail(char *optarg)
 }
 
 void
+options_parse_geometry(char *optarg)
+{
+   char *ptok[4], **ptr = ptok;
+   int   cnt = 0;
+   rect  r = {-1, -1, -1, -1};
+
+   *ptr = strtok(optarg, ",");
+   while (*ptr++ && ++cnt < 4)
+   {
+     *ptr = strtok(NULL, ",");
+   }
+
+   r.x = atoi(ptok[0]);
+   if (cnt > 1)
+     r.y = atoi(ptok[1]);
+   if (cnt > 2)
+     r.w = atoi(ptok[2]);
+   if (cnt > 3)
+     r.h = atoi(ptok[3]);
+   opt.geometry = r;
+}
+
+void
 show_version(void)
 {
    printf(PACKAGE " version " VERSION "\n");
@@ -262,6 +289,7 @@ show_usage(void)
            "                            window decorations (border, titlebar, etc).\n"
            "  -u, --focused             Use the currently focused window.\n"
            "  -w, --window ID           Use the window identified by ID.\n"
+           "  -g, --geometry X,Y,W,H    Specify a position and a size.\n"
            "  -t, --thumb NUM           Generate thumbnail too. NUM is the percentage\n"
            "                            of the original size for the thumbnail to be,\n"
            "                            or the geometry in percent, e.g. 50x60 or 80x20.\n"
